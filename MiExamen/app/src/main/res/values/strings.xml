@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Examen</string>
+
+    <string name="question1">¿Quién escribió "Cien años de soledad"?</string>
+</resources>
