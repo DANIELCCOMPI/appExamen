@@ -1,8 +1,6 @@
 package com.apptama.miexamen.view.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +9,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.apptama.miexamen.R;
-import com.apptama.miexamen.datos.entity.Curso;
 import com.apptama.miexamen.datos.entity.Examen;
-import com.apptama.miexamen.view.activity.ExamenActivity;
 
 import java.util.List;
 
@@ -26,6 +22,7 @@ public class MiAdapterListView extends BaseAdapter {
     private Context context;
     private int layout;
     private List<Examen> examenList;
+    private int selectedPosition = -1;
 
     public MiAdapterListView(Context context, int layout, List<Examen> examenList) {
         this.context = context;
@@ -49,13 +46,33 @@ public class MiAdapterListView extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        //copiamos la vista
-        View v = convertView;
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-        //inflamos la vista que nos ha llegado con nuestro layout personalizado
-        LayoutInflater layoutInflater = LayoutInflater.from(this.context);
-        v = layoutInflater.inflate(R.layout.list_tem, null);
+        ViewHolder holder;
+
+        if (convertView == null) {
+
+            //inflamos la vista que nos ha llegado con nuestro layout personalizado
+            LayoutInflater layoutInflater = LayoutInflater.from(this.context);
+            convertView = layoutInflater.inflate(R.layout.list_tem, null);
+
+            holder = new ViewHolder();
+
+            holder.txtNroPregunta = (TextView) convertView.findViewById(R.id.txtNro);
+            holder.txtPregunta = (TextView) convertView.findViewById(R.id.txtPregunta);
+            holder.rdbRspta1 = (RadioButton) convertView.findViewById(R.id.rdbRspta1);
+            holder.rdbRspta2 = (RadioButton) convertView.findViewById(R.id.rdbRspta2);
+            holder.rdbRspta3 = (RadioButton) convertView.findViewById(R.id.rdbRspta3);
+            holder.rdbRspta4 = (RadioButton) convertView.findViewById(R.id.rdbRspta4);
+
+            convertView.setTag(holder);
+
+        } else {
+
+            holder = (ViewHolder) convertView.getTag();
+
+
+        }
 
         //nos traemos los valores actuales dependiente de la posicion
         String nroPregunta = examenList.get(position).getNroPregunta().toString();
@@ -69,26 +86,88 @@ public class MiAdapterListView extends BaseAdapter {
         String rspta4 = examenList.get(position).getRspta4();
         Boolean isRspta4 = examenList.get(position).isRspta4();
 
+
         //referenciamos el elemento a modificar y lo rellenamos
-        TextView txtNroPregunta = (TextView) v.findViewById(R.id.txtNro);
-        txtNroPregunta.setText(nroPregunta);
-        TextView txtPregunta = (TextView) v.findViewById(R.id.txtPregunta);
-        txtPregunta.setText(pregunta);
-        RadioButton rdbRspta1 = (RadioButton) v.findViewById(R.id.rdbRspta1);
-        rdbRspta1.setText(rspta1);
-        rdbRspta1.setChecked(false);
-        RadioButton rdbRspta2 = (RadioButton) v.findViewById(R.id.rdbRspta2);
-        rdbRspta2.setText(rspta2);
-        rdbRspta2.setChecked(false);
-        RadioButton rdbRspta3 = (RadioButton) v.findViewById(R.id.rdbRspta3);
-        rdbRspta3.setText(rspta3);
-        rdbRspta3.setChecked(false);
-        RadioButton rdbRspta4 = (RadioButton) v.findViewById(R.id.rdbRspta4);
-        rdbRspta4.setText(rspta4);
-        rdbRspta4.setChecked(false);
+
+        holder.txtNroPregunta.setText(nroPregunta);
+        holder.txtPregunta.setText(pregunta);
+        holder.rdbRspta1.setText(rspta1);
+        holder.rdbRspta1.setChecked(isRspta1);
+        holder.rdbRspta2.setText(rspta2);
+        holder.rdbRspta2.setChecked(isRspta2);
+        holder.rdbRspta3.setText(rspta3);
+        holder.rdbRspta3.setChecked(isRspta3);
+        holder.rdbRspta4.setText(rspta4);
+        holder.rdbRspta4.setChecked(isRspta4);
+
+
+        holder.rdbRspta1.setTag(position);
+        holder.txtNroPregunta.setTag(position);
+        holder.rdbRspta1.setTag(position);
+        holder.rdbRspta2.setTag(position);
+        holder.rdbRspta3.setTag(position);
+        holder.rdbRspta4.setTag(position);
+
+        holder.rdbRspta1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                itemCheckChanged(v, 1);
+
+            }
+        });
+
+        holder.rdbRspta2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                itemCheckChanged(v, 2);
+            }
+        });
+
+        holder.rdbRspta3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                itemCheckChanged(v, 3);
+            }
+        });
+
+
+        holder.rdbRspta4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                itemCheckChanged(v, 4);
+            }
+        });
+
 
         //devolvemos la vista inflada y modificada con nuestros datos
-        return v;
+        return convertView;
+
+    }
+
+    static class ViewHolder {
+
+        TextView txtNroPregunta;
+        TextView txtPregunta;
+        RadioButton rdbRspta1;
+        RadioButton rdbRspta2;
+        RadioButton rdbRspta3;
+        RadioButton rdbRspta4;
+
+
+    }
+
+    private void itemCheckChanged(View view, Integer rspta) {
+
+        selectedPosition = (Integer) view.getTag();
+        examenList.get(selectedPosition).setIsRspta1(1 == rspta);
+        examenList.get(selectedPosition).setIsRspta2(2 == rspta);
+        examenList.get(selectedPosition).setIsRspta3(3 == rspta);
+        examenList.get(selectedPosition).setIsRspta4(4 == rspta);
+        notifyDataSetChanged();
 
     }
 
